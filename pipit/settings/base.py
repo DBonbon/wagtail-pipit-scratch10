@@ -1,5 +1,9 @@
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from typing import Optional
+
+from pipit.env_utils import get_env, get_env_bool  # NOQA: F401
+
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
@@ -77,23 +81,33 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "pipit.urls"
+APPEND_SLASH = True
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            os.path.join(PROJECT_DIR, "templates"),
-        ],
-        "APP_DIRS": True,
+        "DIRS": ["templates"],
         "OPTIONS": {
+            "debug": DEBUG,
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ],
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.media",
+                "django.template.context_processors.static",
+                "django.template.context_processors.tz",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "wagtail.contrib.settings.context_processors.settings",
+                # Project specific
+                "pipit.context_processors.settings_context_processor",
             ],
         },
-    },
+    }
 ]
 
 WSGI_APPLICATION = "pipit.wsgi.application"
@@ -112,6 +126,20 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+"""
+DATABASES = {
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": get_env("DATABASE_NAME", required=True),
+        "USER": get_env("DATABASE_USER", required=True),
+        "PASSWORD": get_env("DATABASE_PASSWORD", required=True),
+        "HOST": get_env("DATABASE_HOST", required=True),
+        "PORT": int(get_env("DATABASE_PORT", default="5432")),
+    }
+}
+"""
+
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
@@ -172,10 +200,12 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATICFILES_FINDERS = [
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-]
+STATICFILES_DIRS = (
+    'C:/Users/anica/PycharmProjects/digitalocean-deploy-tests/wagtail-pipit-scratch9/Acme-Blog/src/pipit',
+    # "/home/special.polls.com/polls/static",
+    # "/home/polls.com/polls/static",
+)
+
 
 """STATICFILES_DIRS = [
     os.path.join(PROJECT_DIR, "static"),
@@ -196,8 +226,24 @@ STATIC_URL = "/static/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
-
-
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 WAGTAILADMIN_BASE_URL = "http://example.com"
+
+
+# Prevent content type sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Admin
+ADMIN_URL = "wt/admin/"
+
+# NextJS
+WAGTAIL_HEADLESS_PREVIEW = {
+    "CLIENT_URLS": {
+        "default": "/api/preview/",
+    }
+}
+
+# Sentry
+SENTRY_DSN: Optional[str] = None
+SENTRY_ENVIRONMENT: Optional[str] = None
