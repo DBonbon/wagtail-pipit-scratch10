@@ -1,35 +1,60 @@
-from django.conf import settings
-from django.urls import include, path
+import typing
+
 from django.contrib import admin
-
+from django.conf import settings
+from django.urls import include, path, re_path, URLResolver, URLPattern
+from django.conf.urls.static import static
+from django.views import defaults as default_views
 from wagtail.admin import urls as wagtailadmin_urls
-from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
+from wagtail import urls as wagtail_urls
+from wagtail.contrib.sitemaps.views import sitemap
 
-from search import views as search_views
+from main.views.page_not_found import PageNotFoundView
+from main.views.error_500 import error_500_view
+from nextjs.api import api_router
 
-urlpatterns = [
-    #path("django-admin/", admin.site.urls),
-    path("admin/", include(wagtailadmin_urls)),
-    path("documents/", include(wagtaildocs_urls)),
-    path("search/", search_views.search, name="search"),
-]
+handler404 = PageNotFoundView.as_view()
+handler500 = error_500_view
 
+URL = typing.Union[URLPattern, URLResolver]
+URLList = typing.List[URL]
+
+urlpatterns: URLList = []
 
 if settings.DEBUG:
-    from django.conf.urls.static import static
-    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+    urlpatterns += [
+        path(
+            "wt/400/",
+            default_views.bad_request,
+            kwargs={"exception": Exception("Bad Request!")},
+        ),  # NOQA
+        path(
+            "wt/403/",
+            default_views.permission_denied,
+            kwargs={"exception": Exception("Permission Denied")},
+        ),  # NOQA
+        path(
+            "wt/404/", handler404, kwargs={"exception": Exception("Page not Found")}
+        ),  # NOQA
+        path(
+            "wt/500/", handler500, kwargs={"exception": Exception("Internal error")}
+        ),  # NOQA
+    ]
 
-    # Serve static and media files from development server
-    urlpatterns += staticfiles_urlpatterns()
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    if "debug_toolbar" in settings.INSTALLED_APPS:
+        import debug_toolbar
 
-urlpatterns = urlpatterns + [
-    # For anything not caught by a more specific rule above, hand over to
-    # Wagtail's page serving mechanism. This should be the last pattern in
-    # the list:
-    path("", include(wagtail_urls)),
-    # Alternatively, if you want Wagtail pages to be served from a subpath
-    # of your site, rather than the site root:
-    #    path("pages/", include(wagtail_urls)),
+        urlpatterns += [path("wt/__debug__/", include(debug_toolbar.urls))]
+
+urlpatterns += [
+    path(settings.ADMIN_URL, admin.site.urls),
+    path("wt/api/nextjs/v1/", api_router.urls),
+    path("wt/cms/", include(wagtailadmin_urls)),
+    path("wt/documents/", include(wagtaildocs_urls)),
+    path("wt/sitemap.xml", sitemap, name="sitemap"),
 ]
+
+urlpatterns += [re_path(r"", include(wagtail_urls))]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

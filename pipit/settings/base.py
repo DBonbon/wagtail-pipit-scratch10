@@ -2,7 +2,7 @@
 import os
 from typing import Optional
 
-from pipit.env_utils import get_env, get_env_bool  # NOQA: F401
+from ..env_utils import get_env, get_env_bool  # NOQA: F401
 
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,7 +21,7 @@ APP_VERSION = "0.1.0"
 DEBUG = False
 
 # This is when debug is off, else django wont allow you to visit the site
-#ALLOWED_HOSTS = get_env("ALLOWED_HOSTS", required=True).split(",")
+ALLOWED_HOSTS = get_env("ALLOWED_HOSTS", required=True).split(",")
 
 INTERNAL_IPS = ["127.0.0.1"]
 # Quick-start development settings - unsuitable for production
@@ -31,7 +31,7 @@ INTERNAL_IPS = ["127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
-    #"django.contrib.admin",
+    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -65,21 +65,20 @@ INSTALLED_APPS = [
     "customuser",
     "customimage",
     "customdocument",
-    #"main",
-    #"nextjs",
+    "main",
+    "nextjs",
 ]
 
 MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.middleware.security.SecurityMiddleware",
-    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 ]
-
 ROOT_URLCONF = "pipit.urls"
 APPEND_SLASH = True
 
@@ -196,6 +195,43 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
     "webp": "webp",
 }
 
+# File storage
+if get_env("AWS_ACCESS_KEY_ID"):
+    AWS_ACCESS_KEY_ID = get_env("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = get_env("AWS_SECRET_ACCESS_KEY", required=True)
+    AWS_STORAGE_BUCKET_NAME = get_env("AWS_BUCKET_NAME", required=True)
+    if get_env("AWS_S3_ENDPOINT_URL", default=""):
+        AWS_S3_ENDPOINT_URL = get_env("AWS_S3_ENDPOINT_URL")
+
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_FILE_OVERWRITE = False
+
+    AWS_EXPIRY = 60 * 60 * 24 * 7  # One week
+    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age={}".format(AWS_EXPIRY)}
+
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    THUMBNAIL_DEFAULT_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+
+# Uploaded media
+MEDIA_URL = "/wt/media/"
+MEDIA_ROOT = get_env("MEDIA_PATH", required=True)
+
+
+# Static files, if in production use static root, else use static dirs
+
+# Static URL to use when referring to static files located in STATIC_ROOT.
+STATIC_URL = "/wt/static/"
+
+# The absolute path to the directory where collectstatic will collect static
+# files for deployment. Example: "/var/www/example.com/static/"I
+STATIC_ROOT = get_env("STATIC_PATH", required=True)
+
+# This setting defines the additional locations the staticfiles will traverse
+STATICFILES_DIRS = (
+    # "/home/special.polls.com/polls/static",
+    # "/home/polls.com/polls/static",
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -205,31 +241,6 @@ STATICFILES_DIRS = (
     # "/home/special.polls.com/polls/static",
     # "/home/polls.com/polls/static",
 )
-
-
-"""STATICFILES_DIRS = [
-    os.path.join(PROJECT_DIR, "static"),
-]"""
-STATICFILES_DIRS = (
-    'C:/Users/anica/PycharmProjects/digitalocean-deploy-tests/wagtail-pipit-scratch9/Acme-Blog/src/pipit',
-    # "/home/special.polls.com/polls/static",
-    # "/home/polls.com/polls/static",
-)
-# ManifestStaticFilesStorage is recommended in production, to prevent outdated
-# JavaScript / CSS assets being served from cache (e.g. after a Wagtail upgrade).
-# See https://docs.djangoproject.com/en/4.2/ref/contrib/staticfiles/#manifeststaticfilesstorage
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
-
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATIC_URL = "/static/"
-
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
-
-# Base URL to use when referring to full URLs within the Wagtail admin backend -
-# e.g. in notification emails. Don't include '/admin' or a trailing slash
-WAGTAILADMIN_BASE_URL = "http://example.com"
-
 
 # Prevent content type sniffing
 SECURE_CONTENT_TYPE_NOSNIFF = True
