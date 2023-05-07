@@ -7,3 +7,4 @@ wagtail-meta-preview==1.1.1
 wagtail_headless_preview==0.5.0
 
 django-cors-headers
+GDAL==3.5.1
