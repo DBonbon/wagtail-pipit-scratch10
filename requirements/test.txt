@@ -1,4 +1,4 @@
-x# Extend base.txt
+# Extend base.txt
 -r base.txt
 
 # Add extra test requirements here (such as factory-boy)
