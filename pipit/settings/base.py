@@ -15,7 +15,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 APP_VERSION = "0.1.0"
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = get_env("SECRET_KEY", required=True)
+SECRET_KEY = get_env("SECRET_KEY", required=True)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -164,7 +164,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
-TIME_ZONE = "Europe/Stockholm"
+TIME_ZONE = "Europe/Paris"
 LANGUAGE_CODE = "en-us"
 SITE_ID = 1
 USE_I18N = True
