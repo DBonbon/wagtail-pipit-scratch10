@@ -115,7 +115,7 @@ WSGI_APPLICATION = "pipit.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
+"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
@@ -137,7 +137,7 @@ DATABASES = {
         "PORT": int(get_env("DATABASE_PORT", default="5432")),
     }
 }
-"""
+
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
