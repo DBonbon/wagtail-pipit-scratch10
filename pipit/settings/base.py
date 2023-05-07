@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
-    #"django.contrib.gis",
+    "django.contrib.gis",
     # Third party apps
     "wagtail.embeds",
     "wagtail.sites",
@@ -67,6 +67,8 @@ INSTALLED_APPS = [
     "customdocument",
     "main",
     "nextjs",
+
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -79,6 +81,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
 ROOT_URLCONF = "pipit.urls"
 APPEND_SLASH = True
 
@@ -258,3 +261,11 @@ WAGTAIL_HEADLESS_PREVIEW = {
 # Sentry
 SENTRY_DSN: Optional[str] = None
 SENTRY_ENVIRONMENT: Optional[str] = None
+
+if os.name == 'nt':
+    VENV_BASE = os.environ['VIRTUAL_ENV']
+    os.environ['PATH'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo') + ';' + os.environ['PATH']
+    os.environ['PROJ_LIB'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo\\data\\proj') + ';' + os.environ['PATH']
+
+
+CORS_ORIGIN_ALLOW_ALL = True
