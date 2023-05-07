@@ -6,7 +6,7 @@ from ..env_utils import get_env, get_env_bool  # NOQA: F401
 
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_DIR = os.path.dirname(PROJECT_DIR)
+#BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
