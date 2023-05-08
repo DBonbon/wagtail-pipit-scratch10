@@ -23,7 +23,7 @@ def if_exists_load_env(name: str) -> None:
 
 
 def main():
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pipit.settings.prod")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pipit.settings.local")
 
     if_exists_load_env(".env")
     if not os.environ.get("IN_DOCKER", False):

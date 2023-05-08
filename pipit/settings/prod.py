@@ -5,7 +5,7 @@ import sentry_sdk
 from sentry_sdk import configure_scope
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from pipit.settings.base import *  # NOQA
+from .base import *  # NOQA
 
 
 DEBUG = False
@@ -66,7 +66,7 @@ CSRF_COOKIE_SECURE = True
 WAGTAILADMIN_BASE_URL = "https://blog.acme.com"
 
 # Sentry
-SENTRY_DSN = get_env("SENTRY_DSN", required=True)
+SENTRY_DSN = get_env("SENTRY_DSN", required=False)
 SENTRY_ENVIRONMENT = "prod"
 
 sentry_sdk.init(

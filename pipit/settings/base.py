@@ -2,11 +2,11 @@
 import os
 from typing import Optional
 
-from ..env_utils import get_env, get_env_bool  # NOQA: F401
+from pipit.env_utils import get_env, get_env_bool  # NOQA: F401
 
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE_DIR = os.path.dirname(PROJECT_DIR)
+#BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -15,10 +15,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 APP_VERSION = "0.1.0"
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = get_env("SECRET_KEY", required=True)
+SECRET_KEY = get_env("SECRET_KEY", required=True)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # This is when debug is off, else django wont allow you to visit the site
 ALLOWED_HOSTS = get_env("ALLOWED_HOSTS", required=True).split(",")
@@ -65,20 +65,27 @@ INSTALLED_APPS = [
     "customuser",
     "customimage",
     "customdocument",
+
     "main",
     "nextjs",
+
+    'corsheaders',
+
+    #"main",
+    #"nextjs",
 ]
 
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 ]
+
 ROOT_URLCONF = "pipit.urls"
 APPEND_SLASH = True
 
@@ -115,7 +122,7 @@ WSGI_APPLICATION = "pipit.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
+"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
@@ -129,7 +136,7 @@ DATABASES = {
 """
 DATABASES = {
     "default": {
-        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": get_env("DATABASE_NAME", required=True),
         "USER": get_env("DATABASE_USER", required=True),
         "PASSWORD": get_env("DATABASE_PASSWORD", required=True),
@@ -137,7 +144,7 @@ DATABASES = {
         "PORT": int(get_env("DATABASE_PORT", default="5432")),
     }
 }
-"""
+
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
@@ -164,7 +171,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
-TIME_ZONE = "Europe/Stockholm"
+TIME_ZONE = "Europe/Paris"
 LANGUAGE_CODE = "en-us"
 SITE_ID = 1
 USE_I18N = True
@@ -195,52 +202,40 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
     "webp": "webp",
 }
 
-# File storage
-if get_env("AWS_ACCESS_KEY_ID"):
-    AWS_ACCESS_KEY_ID = get_env("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = get_env("AWS_SECRET_ACCESS_KEY", required=True)
-    AWS_STORAGE_BUCKET_NAME = get_env("AWS_BUCKET_NAME", required=True)
-    if get_env("AWS_S3_ENDPOINT_URL", default=""):
-        AWS_S3_ENDPOINT_URL = get_env("AWS_S3_ENDPOINT_URL")
-
-    AWS_QUERYSTRING_AUTH = False
-    AWS_S3_FILE_OVERWRITE = False
-
-    AWS_EXPIRY = 60 * 60 * 24 * 7  # One week
-    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age={}".format(AWS_EXPIRY)}
-
-    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-    THUMBNAIL_DEFAULT_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-
-
-# Uploaded media
-MEDIA_URL = "/wt/media/"
-MEDIA_ROOT = get_env("MEDIA_PATH", required=True)
-
-
-# Static files, if in production use static root, else use static dirs
-
-# Static URL to use when referring to static files located in STATIC_ROOT.
-STATIC_URL = "/wt/static/"
-
-# The absolute path to the directory where collectstatic will collect static
-# files for deployment. Example: "/var/www/example.com/static/"I
-STATIC_ROOT = get_env("STATIC_PATH", required=True)
-
-# This setting defines the additional locations the staticfiles will traverse
-STATICFILES_DIRS = (
-    # "/home/special.polls.com/polls/static",
-    # "/home/polls.com/polls/static",
-)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATICFILES_DIRS = (
+    #'C:/Users/anica/PycharmProjects/digitalocean-deploy-tests/wagtail-pipit-scratch9/Acme-Blog/src/pipit',
+    # "/home/special.polls.com/polls/static",
+    # "/home/polls.com/polls/static",
+)
+
+
+"""STATICFILES_DIRS = [
+    os.path.join(PROJECT_DIR, "static"),
+]"""
+STATICFILES_DIRS = (
     'C:/Users/anica/PycharmProjects/digitalocean-deploy-tests/wagtail-pipit-scratch9/Acme-Blog/src/pipit',
     # "/home/special.polls.com/polls/static",
     # "/home/polls.com/polls/static",
 )
+# ManifestStaticFilesStorage is recommended in production, to prevent outdated
+# JavaScript / CSS assets being served from cache (e.g. after a Wagtail upgrade).
+# See https://docs.djangoproject.com/en/4.2/ref/contrib/staticfiles/#manifeststaticfilesstorage
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = "/static/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+
+# Base URL to use when referring to full URLs within the Wagtail admin backend -
+# e.g. in notification emails. Don't include '/admin' or a trailing slash
+WAGTAILADMIN_BASE_URL = "http://example.com"
+
 
 # Prevent content type sniffing
 SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -258,3 +253,11 @@ WAGTAIL_HEADLESS_PREVIEW = {
 # Sentry
 SENTRY_DSN: Optional[str] = None
 SENTRY_ENVIRONMENT: Optional[str] = None
+
+"""if os.name == 'nt':
+    VENV_BASE = os.environ['VIRTUAL_ENV']
+    os.environ['PATH'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo') + ';' + os.environ['PATH']
+    os.environ['PROJ_LIB'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo\\data\\proj') + ';' + os.environ['PATH']
+"""
+
+CORS_ORIGIN_ALLOW_ALL = True

@@ -2,9 +2,7 @@
 Write local settings here, or override base settings
 """
 from .base import *  # NOQA
-from typing import Optional
 
-#from ..env_utils import get_env, get_env_bool
 
 VS_CODE_REMOTE_DEBUG = get_env_bool("VS_CODE_REMOTE_DEBUG", default=False)
 DEBUG = True
@@ -31,7 +29,6 @@ if get_env_bool("DEBUG_TOOLBAR", default=False):
     DEBUG_TOOLBAR_CONFIG = {
         "SHOW_TOOLBAR_CALLBACK": "pipit.settings.local.show_toolbar"
     }
-
 
 # Allow django-debug-bar under docker
 def show_toolbar(request):
