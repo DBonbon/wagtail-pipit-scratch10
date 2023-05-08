@@ -65,17 +65,9 @@ INSTALLED_APPS = [
     "customuser",
     "customimage",
     "customdocument",
-
     "main",
     "nextjs",
-
     'corsheaders',
-<<<<<<< HEAD
-
-    #"main",
-    #"nextjs",
-=======
->>>>>>> 412de7ba8345a5ccdbc9ac01de101fb033aa4ef0
 ]
 
 MIDDLEWARE = [
