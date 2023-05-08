@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
-    #"django.contrib.gis",
+    "django.contrib.gis",
     # Third party apps
     "wagtail.embeds",
     "wagtail.sites",
@@ -70,9 +70,12 @@ INSTALLED_APPS = [
     "nextjs",
 
     'corsheaders',
+<<<<<<< HEAD
 
     #"main",
     #"nextjs",
+=======
+>>>>>>> 412de7ba8345a5ccdbc9ac01de101fb033aa4ef0
 ]
 
 MIDDLEWARE = [

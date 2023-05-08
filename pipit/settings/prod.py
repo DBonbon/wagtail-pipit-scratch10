@@ -5,7 +5,7 @@ import sentry_sdk
 from sentry_sdk import configure_scope
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from .base import *  # NOQA
+from .local import *  # NOQA
 
 
 DEBUG = False
