@@ -1,5 +1,5 @@
 # Virtualenv
-venv/
+/venv/
 
 
 # Python specific, Byte-compiled / optimized / DLL files
@@ -51,7 +51,8 @@ src/static
 src/media
 src/pipit/static/pipit/**
 !src/pipit/static/pipit/admin-overrides.css
-
+/static/
+/media/
 # Pytest
 .cache
 
